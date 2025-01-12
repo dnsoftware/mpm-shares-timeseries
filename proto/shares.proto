@@ -29,5 +29,5 @@ message AddSharesBatchRequest {
 }
 
 message AddSharesBatchResponse {
-   = 1;
+  int64 added_count = 1;
 }

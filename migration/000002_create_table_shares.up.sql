@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS mpmhouse.shares  ON CLUSTER clickhouse_cluster (
    INDEX idx_uuid (uuid) TYPE minmax GRANULARITY 16
 )
 ENGINE = ReplicatedMergeTree(
-    '/clickhouse/tables/{shard}/my_table', -- Общий путь для всех реплик
+    '/clickhouse/tables/{shard}/shares', -- Общий путь для всех реплик
     '{replica}'                           -- Уникальное имя для текущей реплики
 )
 PARTITION BY toYYYYMM(share_date)

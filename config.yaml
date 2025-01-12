@@ -1,0 +1,15 @@
+app_name: Shares timeseries
+app_version: 0.1
+clickhouse_addr:
+  - "localhost:9000"
+  - "localhost:9001"
+  - "localhost:9002"
+clickhouse_database: "mpmhouse"
+clickhouse_username: "mpmhouse"
+clickhouse_password: "mpmhouse"
+grpc_port: 6878
+jwt_service_name: "timeseries"
+jwt_secret: "jwtsecret"
+jwt_valid_services:
+  - "normalizer"
+  - "minersprocessor"
