@@ -10,15 +10,16 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/dnsoftware/mpm-save-get-shares/pkg/utils"
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
 	_ "github.com/golang-migrate/migrate/v4/database/clickhouse"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
 	"github.com/dnsoftware/mpm-shares-timeseries/config"
-	clickhouse2 "github.com/dnsoftware/mpm-shares-timeseries/internal/adapter/clickhouse"
 	"github.com/dnsoftware/mpm-shares-timeseries/internal/constants"
 	"github.com/dnsoftware/mpm-shares-timeseries/internal/entity"
+	clickhouse2 "github.com/dnsoftware/mpm-shares-timeseries/internal/infrastructure/clickhouse"
 	"github.com/dnsoftware/mpm-shares-timeseries/pkg/clickhouseconn"
 )
 
@@ -75,11 +76,11 @@ func TestAddShare(t *testing.T) {
 
 	// Подключаемся к mpmhouse
 	conn, err = clickhouseconn.NewClickhouseConnect(clickhouseconn.Config{
-		ClickhouseAddr:             cfg.ClickhouseAddr,
-		ClickhouseDatabase:         cfg.ClickhouseDatabase,
-		ClickhouseUsername:         cfg.ClickhouseUsername,
-		ClickhousePassword:         cfg.ClickhousePassword,
-		ClickhouseMaxExecutionTime: 1,
+		Addr:             cfg.ClickhouseAddr,
+		Database:         cfg.ClickhouseDatabase,
+		Username:         cfg.ClickhouseUsername,
+		Password:         cfg.ClickhousePassword,
+		MaxExecutionTime: 10,
 	})
 	require.NoError(t, err)
 	defer conn.Close()
@@ -91,21 +92,22 @@ func TestAddShare(t *testing.T) {
 	cfgStore := clickhouse2.ShareStorageConfig{
 		Conn:        conn,
 		ClusterName: "clickhouse_cluster",
+		Database:    "mpmhouse",
 	}
 	store, err := clickhouse2.NewClickhouseShareStorage(cfgStore)
 	require.NoError(t, err)
 
+	// Вставка записи
 	ctx = context.Background()
-	formattedTime := time.Now().Format("2006-01-02 15:04:05.000")
 	share := entity.Share{
 		UUID:         "9e7b8188-01a6-4989-8805-e4337e31195a",
 		ServerID:     "EU-HSHP-ALPH-1",
 		CoinID:       4,
 		WorkerID:     4,
 		WalletID:     2,
-		ShareDate:    formattedTime,
-		Difficulty:   "0.0089410000",
-		Sharedif:     "5.1467700000",
+		ShareDate:    time.Now().UnixMilli(),
+		Difficulty:   "0.008941",
+		Sharedif:     "5.14677",
 		Nonce:        "9c44010001030201010202030400040402040304915711c0",
 		IsSolo:       false,
 		RewardMethod: "PPLNS",
@@ -114,5 +116,39 @@ func TestAddShare(t *testing.T) {
 
 	err = store.AddShare(ctx, share)
 	require.NoError(t, err)
+
+	// Получение записи
+	shareFrom, err := store.GetShareRow(ctx, "9e7b8188-01a6-4989-8805-e4337e31195a")
+	require.NoError(t, err)
+
+	require.Equal(t, shareFrom.ServerID, share.ServerID)
+
+	// Пакетная вставка
+	var shares []entity.Share
+	for i := 0; i < 1000000; i++ {
+		share = entity.Share{
+			UUID:         uuid.New().String(),
+			ServerID:     "EU-HSHP-ALPH-1",
+			CoinID:       4,
+			WorkerID:     4,
+			WalletID:     2,
+			ShareDate:    time.Now().UnixMilli(),
+			Difficulty:   "0.008941",
+			Sharedif:     "5.14677",
+			Nonce:        "9c44010001030201010202030400040402040304915711c0",
+			IsSolo:       false,
+			RewardMethod: "PPLNS",
+			Cost:         "0.00124",
+		}
+
+		shares = append(shares, share)
+	}
+
+	start := time.Now().UnixMicro()
+	err = store.AddBatch(ctx, shares)
+	end := time.Now().UnixMicro()
+	require.NoError(t, err)
+
+	fmt.Println(fmt.Sprintf("%v", end-start))
 
 }

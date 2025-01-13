@@ -8,26 +8,26 @@ import (
 )
 
 type Config struct {
-	ClickhouseAddr             []string // список нод
-	ClickhouseDatabase         string   // назхвание БД
-	ClickhouseUsername         string   // имя пользователя базы
-	ClickhousePassword         string   // пароль пользователя
-	ClickhouseMaxExecutionTime int
+	Addr             []string // список нод
+	Database         string   // назхвание БД
+	Username         string   // имя пользователя базы
+	Password         string   // пароль пользователя
+	MaxExecutionTime int
 }
 
 func NewClickhouseConnect(cfg Config) (driver.Conn, error) {
 
 	maxExecutionTime := 60
-	if cfg.ClickhouseMaxExecutionTime > 0 {
-		maxExecutionTime = cfg.ClickhouseMaxExecutionTime
+	if cfg.MaxExecutionTime > 0 {
+		maxExecutionTime = cfg.MaxExecutionTime
 	}
 
 	conn, err := clickhouse.Open(&clickhouse.Options{
-		Addr: cfg.ClickhouseAddr,
+		Addr: cfg.Addr,
 		Auth: clickhouse.Auth{
-			Database: cfg.ClickhouseDatabase,
-			Username: cfg.ClickhouseUsername,
-			Password: cfg.ClickhousePassword,
+			Database: cfg.Database,
+			Username: cfg.Username,
+			Password: cfg.Password,
 		},
 		DialTimeout: 5 * time.Second,
 		Compression: &clickhouse.Compression{

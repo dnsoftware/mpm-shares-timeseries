@@ -7,7 +7,7 @@ type Share struct {
 	CoinID       int64  // идентификатор монеты
 	WorkerID     int64  // ID воркера
 	WalletID     int64  // ID майнера (кошелька)
-	ShareDate    string // время когда найдено в формате timestamp, в миллисекундах ("2006-01-02 15:04:05.999")
+	ShareDate    int64  // время когда найдено в миллисекундах
 	Difficulty   string // сложность майнера
 	Sharedif     string // сложность шары	реальная
 	Nonce        string // nonce шары
