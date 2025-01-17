@@ -145,7 +145,7 @@ func TestAddShare(t *testing.T) {
 	}
 
 	start := time.Now().UnixMicro()
-	err = store.AddBatch(ctx, shares)
+	err = store.AddSharesBatch(ctx, shares)
 	end := time.Now().UnixMicro()
 	require.NoError(t, err)
 

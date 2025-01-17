@@ -67,8 +67,8 @@ func (c *ClickhouseShareStorage) GetShareRow(ctx context.Context, shareUUID stri
 	return &share, nil
 }
 
-// AddBatch пакетная вставка
-func (c *ClickhouseShareStorage) AddBatch(ctx context.Context, shares []entity.Share) error {
+// AddSharesBatch пакетная вставка
+func (c *ClickhouseShareStorage) AddSharesBatch(ctx context.Context, shares []entity.Share) error {
 
 	// Открытие пакетной вставки
 	batch, err := c.conn.PrepareBatch(ctx, "INSERT INTO shares (uuid, server_id, coin_id, worker_id, wallet_id, share_date, difficulty, sharedif, nonce, is_solo, reward_method, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")

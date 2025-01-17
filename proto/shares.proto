@@ -11,11 +11,11 @@ service SharesService {
 
 message Share {
   string uuid = 1;
-  string service_id = 2;
+  string server_id = 2;
   int64 coin_id = 3;
   int64 worker_id = 4;
   int64 wallet_id = 5;
-  string share_date = 6;
+  int64 share_date = 6;
   string difficulty = 7;
   string share_dif = 8;
   string nonce = 9;
@@ -25,7 +25,7 @@ message Share {
 }
 
 message AddSharesBatchRequest {
-  repeated Share share = 1;
+  repeated Share shares = 1;
 }
 
 message AddSharesBatchResponse {
