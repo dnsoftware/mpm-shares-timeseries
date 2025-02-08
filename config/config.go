@@ -13,6 +13,7 @@ import (
 type Config struct {
 	AppName            string   `yaml:"app_name" envconfig:"APP_NAME"    required:"true"`
 	AppVersion         string   `yaml:"app_version" envconfig:"APP_VERSION" required:"true"`
+	ServiceName        string   `yaml:"service_name" envconfig:"SERVICE_NAME"    required:"true"`
 	ClickhouseAddr     []string `yaml:"clickhouse_addr" envconfig:"CLICKHOUSE_ADDR" required:"true"`         // хост:порт clickhouse
 	ClickhouseDatabase string   `yaml:"clickhouse_database" envconfig:"CLICKHOUSE_DATABASE" required:"true"` // название базы clickhouse
 	ClickhouseUsername string   `yaml:"clickhouse_username" envconfig:"CLICKHOUSE_USERNAME" required:"true"` // имя пользователя базы clickhouse

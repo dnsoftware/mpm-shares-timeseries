@@ -1,5 +1,6 @@
 app_name: Shares timeseries
 app_version: 0.1
+service_name: "timeseries"
 clickhouse_addr:
   - "localhost:9000"
   - "localhost:9001"
